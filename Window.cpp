@@ -70,13 +70,13 @@ BOOL Window::CreateWindowInstance() // СОЗДАНИЕ ОКНА
         windowName,
         WS_OVERLAPPEDWINDOW,
 
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
+        CW_USEDEFAULT, // ПОЛОЖЕНИЕ ПО X
+        CW_USEDEFAULT, // ПОЛОЖЕНИЕ ПО Y
+        CW_USEDEFAULT, // ШИРИНА
+        CW_USEDEFAULT, // ВЫСОТА
 
-        NULL,
-        NULL,
+        NULL, // ДЕСКРИПТОР РОДИТЕЛЬСКОГО ОКНА
+        NULL, // ДЕСКРИПТОР МЕНЮ
         hInstance,
         NULL
     );

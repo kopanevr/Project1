@@ -1,5 +1,7 @@
 #pragma once
 
+#include "D3D.h" 
+
 #include <Windows.h>
 
 class Window final
@@ -22,6 +24,8 @@ private:
     static Window* pThis;
 
     BOOL startUpFlag = FALSE;
+
+    ND3D::D3D d3D;
 public:
     Window(const char* className, const char* windowName);
     ~Window();
