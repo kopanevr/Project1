@@ -7,31 +7,23 @@ LRESULT CALLBACK Window::WinProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 {
     Window* pWnd = Window::pThis;
 
-    assert(pWnd != NULL);
-
-    if (pWnd != NULL)
+    if (pWnd != nullptr)
     {
-        pWnd->HandleMessage(hWnd, uMsg, wParam, lParam);
+        return pWnd->HandleMessage(hWnd, uMsg, wParam, lParam);
     }
     else
     {
-        DefWindowProc(hWnd, uMsg, wParam, lParam);
+        return DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
 }
 
 LRESULT Window::HandleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    switch (uMsg)
-    {
-    case WM_DESTROY:
-        PostQuitMessage(0);
+    CONST LRESULT result = uIManager.handleMessage(hWnd, uMsg, wParam, lParam);
 
-        break;
-    default:
-        return DefWindowProc(hWnd, uMsg, wParam, lParam);
-    }
+    if (result != (LRESULT)0) { return result; }
 
-    return 0;
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 BOOL Window::RegisterWindowClass() // РЕГИСТРАЦИЯ КЛАССА
@@ -68,7 +60,7 @@ BOOL Window::CreateWindowInstance() // СОЗДАНИЕ ОКНА
     hWnd = CreateWindowA(
         className,
         windowName,
-        WS_OVERLAPPEDWINDOW,
+        WS_OVERLAPPEDWINDOW, // СТИЛЬ
 
         CW_USEDEFAULT, // ПОЛОЖЕНИЕ ПО X
         CW_USEDEFAULT, // ПОЛОЖЕНИЕ ПО Y
@@ -86,6 +78,8 @@ BOOL Window::CreateWindowInstance() // СОЗДАНИЕ ОКНА
     if (hWnd == NULL)
     {
         std::cerr << "Ошибка создания окна. Код ошибки: " << GetLastError() << std::endl;
+
+        return FALSE;
     }
 
     return TRUE;
@@ -116,9 +110,9 @@ Window::Window(const char* className, const char* windowName)
 
 Window::~Window()
 {
-    if (hWnd)
-    DestroyWindow(hWnd);
-    UnregisterClassA(className, hInstance);
+    if (hWnd != NULL) { DestroyWindow(hWnd); }
+
+    if (hInstance != NULL) { UnregisterClassA(className, hInstance); }
 }
 
 void Window::loop() // ОСНОВНОЙ ЦИКЛ
@@ -127,6 +121,20 @@ void Window::loop() // ОСНОВНОЙ ЦИКЛ
 
     if (startUpFlag == FALSE)
     {
+        return;
+    }
+
+    assert(d3D.CreateDeviceD3D(hWnd) == TRUE);
+
+    if (d3D.CreateDeviceD3D(hWnd) == FALSE) // СОЗДАНИЕ УСТРОЙСТВА И ЦЕПОЧКИ БУФЕРОВ
+    {
+        return;
+    }
+
+    if (uIManager.init(hWnd, ND3D::D3DData.pD3DDevice, ND3D::D3DData.pD3DDeviceContext) != TRUE)
+    {
+        uIManager.shutDown();
+
         return;
     }
 
@@ -151,5 +159,9 @@ void Window::loop() // ОСНОВНОЙ ЦИКЛ
         {
             break;
         }
+
+        uIManager.run();
     }
+
+    uIManager.shutDown();
 }
