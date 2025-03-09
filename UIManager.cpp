@@ -6,6 +6,16 @@
 
 void UIManager::body() const
 {
+    ImGui::Begin("_", nullptr, ImGuiWindowFlags_NoTitleBar); // НАЧАЛО ОКНА
+
+    ImGui::Begin("General"); // НАЧАЛО ОКНА
+
+    //
+
+    ImGui::End(); // КОНЕЦ ОКНА
+    ImGui::Text("Select a vehicle to display"); // ТЕКСТ
+
+    ImGui::End(); // КОНЕЦ ОКНА
 }
 
 //
