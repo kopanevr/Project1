@@ -12,8 +12,14 @@ private:
 
     LRESULT HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+#if __cppcpp > 201703L
+    [[nodiscard]]
+#endif
     BOOL RegisterWindowClass(); // РЕГИСТРАЦИЯ КЛАССА
 
+#if __cppcpp > 201703L
+    [[nodiscard]]
+#endif
     BOOL CreateWindowInstance(); // СОЗДАНИЕ ОКНА
 private:
     HINSTANCE hInstance; // HANDLE ЭКЗЕМПЛЯРА ПРИЛОЖЕНИЯ
