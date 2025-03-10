@@ -81,7 +81,7 @@ void D3D::CleanupDeviceD3D()
 
 BOOL D3D::CreateRenderTargetView() // СОЗДАНИЕ RENDER TARGET VIEW
 {
-    ID3D11Texture2D* pBackBuffer;
+    ID3D11Texture2D* pBackBuffer = nullptr;
 
     HRESULT hr = D3DData.pIDXGISwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
 

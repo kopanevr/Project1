@@ -87,6 +87,10 @@ BOOL Window::CreateWindowInstance() // СОЗДАНИЕ ОКНА
 
 //
 
+Window* Window::pThis = nullptr;
+
+//
+
 Window::Window(const char* className, const char* windowName)
     :   hInstance(NULL),
         hWnd(NULL),

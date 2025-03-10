@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Window.h"
+
 #include <Windows.h>
 
 class Application
