@@ -35,7 +35,7 @@ BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И
     //
 
     D3D_FEATURE_LEVEL featureLevel[] = {
-        D3D_FEATURE_LEVEL_11_0
+        D3D_FEATURE_LEVEL_10_0
     };
 
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
@@ -62,7 +62,7 @@ BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И
         return FALSE;
     }
 
-    if (D3D::CreateRenderTargetView() == TRUE) // СОЗДАНИЕ RENDER TARGET
+    if (D3D::CreateRenderTargetView() != TRUE) // СОЗДАНИЕ RENDER TARGET
     {
         return FALSE;
     }

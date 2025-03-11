@@ -128,9 +128,12 @@ void Window::loop() // ОСНОВНОЙ ЦИКЛ
         return;
     }
 
-    assert(d3D.CreateDeviceD3D(hWnd) == TRUE);
-
     if (d3D.CreateDeviceD3D(hWnd) == FALSE) // СОЗДАНИЕ УСТРОЙСТВА И ЦЕПОЧКИ БУФЕРОВ
+    {
+        return;
+    }
+
+    if (ND3D::D3DData.pD3DDevice == nullptr || ND3D::D3DData.pD3DDeviceContext == nullptr)
     {
         return;
     }
