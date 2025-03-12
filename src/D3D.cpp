@@ -35,14 +35,20 @@ BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И
     //
 
     D3D_FEATURE_LEVEL featureLevel[] = {
-        D3D_FEATURE_LEVEL_10_0
+        D3D_FEATURE_LEVEL_10_1
     };
+
+    UINT createDeviceFlags = 0U;
+
+#ifdef _DEBUG
+    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
         NULL, // АДАПТЕР
         D3D_DRIVER_TYPE_HARDWARE, // ТИП ДРАЙВЕРА
         NULL,
-        0, // ФЛАГИ
+        createDeviceFlags, // ФЛАГИ
         featureLevel,
         ARRAYSIZE(featureLevel),
         D3D11_SDK_VERSION,
@@ -75,8 +81,8 @@ void D3D::CleanupDeviceD3D()
     D3D::CleanupRenderTargetView();
 
     if (D3DData.pIDXGISwapChain != nullptr) { D3DData.pIDXGISwapChain->Release(); D3DData.pIDXGISwapChain = nullptr; }
-    if (D3DData.pD3DDevice != nullptr) { D3DData.pD3DDevice->Release(); D3DData.pD3DDevice = nullptr; }
     if (D3DData.pD3DDeviceContext != nullptr) { D3DData.pD3DDeviceContext->Release(); D3DData.pD3DDeviceContext = nullptr; }
+    if (D3DData.pD3DDevice != nullptr) { D3DData.pD3DDevice->Release(); D3DData.pD3DDevice = nullptr; }
 }
 
 BOOL D3D::CreateRenderTargetView() // СОЗДАНИЕ RENDER TARGET VIEW
