@@ -28,7 +28,7 @@ BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И
 
     dsc.Windowed = TRUE; // РЕЖИМ ПРИЛОЖЕНИЯ
 
-    dsc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; // РЕЖИМ ПЕРЕКЛЮЧЕНИЯ БУФЕРОВ
+    dsc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // РЕЖИМ ПЕРЕКЛЮЧЕНИЯ БУФЕРОВ
 
     dsc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // ФЛАГИ
 
@@ -53,10 +53,10 @@ BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И
         ARRAYSIZE(featureLevel),
         D3D11_SDK_VERSION,
         &dsc,
-        &D3DData.pIDXGISwapChain,
-        &D3DData.pD3DDevice,
-        &D3DData.featureLevel,
-        &D3DData.pD3DDeviceContext
+        &d3DData.pIDXGISwapChain,
+        &d3DData.pD3DDevice,
+        &d3DData.featureLevel,
+        &d3DData.pD3DDeviceContext
     );
 
     assert(FAILED(hr) != true);
@@ -80,16 +80,16 @@ void D3D::CleanupDeviceD3D()
 {
     D3D::CleanupRenderTargetView();
 
-    if (D3DData.pIDXGISwapChain != nullptr) { D3DData.pIDXGISwapChain->Release(); D3DData.pIDXGISwapChain = nullptr; }
-    if (D3DData.pD3DDeviceContext != nullptr) { D3DData.pD3DDeviceContext->Release(); D3DData.pD3DDeviceContext = nullptr; }
-    if (D3DData.pD3DDevice != nullptr) { D3DData.pD3DDevice->Release(); D3DData.pD3DDevice = nullptr; }
+    if (d3DData.pIDXGISwapChain != nullptr) { d3DData.pIDXGISwapChain->Release(); d3DData.pIDXGISwapChain = nullptr; }
+    if (d3DData.pD3DDeviceContext != nullptr) { d3DData.pD3DDeviceContext->Release(); d3DData.pD3DDeviceContext = nullptr; }
+    if (d3DData.pD3DDevice != nullptr) { d3DData.pD3DDevice->Release(); d3DData.pD3DDevice = nullptr; }
 }
 
 BOOL D3D::CreateRenderTargetView() // СОЗДАНИЕ RENDER TARGET VIEW
 {
     ID3D11Texture2D* pBackBuffer = nullptr;
 
-    HRESULT hr = D3DData.pIDXGISwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
+    HRESULT hr = d3DData.pIDXGISwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
 
     assert(FAILED(hr) != true);
 
@@ -100,7 +100,7 @@ BOOL D3D::CreateRenderTargetView() // СОЗДАНИЕ RENDER TARGET VIEW
         return FALSE;
     }
 
-    D3DData.pD3DDevice->CreateRenderTargetView(pBackBuffer, NULL, &D3DData.pIDXGIRenderTargetView);
+    d3DData.pD3DDevice->CreateRenderTargetView(pBackBuffer, NULL, &d3DData.pIDXGIRenderTargetView);
 
     pBackBuffer->Release(); // УМЕНЬШИТЬ СЧЕТЧИК ССЫЛОК
 
@@ -109,5 +109,5 @@ BOOL D3D::CreateRenderTargetView() // СОЗДАНИЕ RENDER TARGET VIEW
 
 void D3D::CleanupRenderTargetView()
 {
-    if (D3DData.pIDXGIRenderTargetView != nullptr) { D3DData.pIDXGIRenderTargetView->Release(); D3DData.pIDXGIRenderTargetView = nullptr; }
+    if (d3DData.pIDXGIRenderTargetView != nullptr) { d3DData.pIDXGIRenderTargetView->Release(); d3DData.pIDXGIRenderTargetView = nullptr; }
 }

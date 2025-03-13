@@ -133,12 +133,12 @@ void Window::loop() // ОСНОВНОЙ ЦИКЛ
         return;
     }
 
-    if (ND3D::D3DData.pD3DDevice == nullptr || ND3D::D3DData.pD3DDeviceContext == nullptr)
+    if (ND3D::d3DData.pD3DDevice == nullptr || ND3D::d3DData.pD3DDeviceContext == nullptr)
     {
         return;
     }
 
-    if (uIManager.init(hWnd, ND3D::D3DData.pD3DDevice, ND3D::D3DData.pD3DDeviceContext) != TRUE)
+    if (uIManager.init(hWnd, ND3D::d3DData.pD3DDevice, ND3D::d3DData.pD3DDeviceContext) != TRUE)
     {
         uIManager.shutDown();
 

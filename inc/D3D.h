@@ -12,7 +12,7 @@ struct
     D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_10_1;
     ID3D11RenderTargetView* pIDXGIRenderTargetView = nullptr;
 }
-D3DData;
+d3DData;
 
 class D3D final
 {
