@@ -28,14 +28,14 @@ BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И
 
     dsc.Windowed = TRUE; // РЕЖИМ ПРИЛОЖЕНИЯ
 
-    dsc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // РЕЖИМ ПЕРЕКЛЮЧЕНИЯ БУФЕРОВ
+    dsc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; // РЕЖИМ ПЕРЕКЛЮЧЕНИЯ БУФЕРОВ
 
     dsc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // ФЛАГИ
 
     //
 
     D3D_FEATURE_LEVEL featureLevel[] = {
-        D3D_FEATURE_LEVEL_10_1
+        D3D_FEATURE_LEVEL_11_0
     };
 
     UINT createDeviceFlags = 0U;
@@ -59,7 +59,7 @@ BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И
         &d3DData.pD3DDeviceContext
     );
 
-    assert(FAILED(hr) != true);
+    assert(SUCCEEDED(hr) == true);
 
     if (FAILED(hr) == true)
     {

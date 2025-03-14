@@ -133,6 +133,9 @@ void Window::loop() // ОСНОВНОЙ ЦИКЛ
         return;
     }
 
+    assert(ND3D::d3DData.pD3DDevice != nullptr);
+    assert(ND3D::d3DData.pD3DDeviceContext != nullptr);
+
     if (ND3D::d3DData.pD3DDevice == nullptr || ND3D::d3DData.pD3DDeviceContext == nullptr)
     {
         return;
