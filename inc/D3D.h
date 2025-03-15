@@ -13,17 +13,17 @@ struct D3DData
     ID3D11RenderTargetView* pIDXGIRenderTargetView = nullptr;
 };
 
-static D3DData d3DData;
-
 class D3D final
 {
+private:
+    BOOL CreateRenderTargetView(); // СОЗДАНИЕ RENDER TARGET VIEW
+    void CleanupRenderTargetView();
+
+    IDXGIAdapter* GetAdapter(const UINT index) const; // ПОЛУЧЕНИЕ АДАПТЕРА
 public:
     D3D() = default;
     ~D3D() = default;
 
     BOOL CreateDeviceD3D(HWND hWnd); // СОЗДАНИЕ УСТРОЙСТВА И ЦЕПОЧКИ БУФЕРОВ
     void CleanupDeviceD3D();
-
-    BOOL CreateRenderTargetView(); // СОЗДАНИЕ RENDER TARGET VIEW
-    void CleanupRenderTargetView();
 };}

@@ -3,27 +3,35 @@
 #include <iostream>
 #include <cassert>
 
+using namespace ND3D;
+
+extern D3DData d3DData;
+
 LRESULT CALLBACK Window::WinProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) // ОКОННАЯ ПРОЦЕДУРА
 {
     Window* pWnd = Window::pThis;
 
-    if (pWnd != nullptr)
+    CONST LRESULT result = pWnd->HandleMessage(hWnd, uMsg, wParam, lParam);
+
+    if (result != (LRESULT)0)
     {
-        return pWnd->HandleMessage(hWnd, uMsg, wParam, lParam);
+        return result;
     }
-    else
+    
+    switch (uMsg)
     {
-        return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    case WM_DESTROY:
+        PostQuitMessage(0); // ПОМЕЩЕНИЕ СООБЩЕНИЯ WM_QUIT В ОЧЕРЕДЬ СООБЩЕНИЙ ПОТОКА
+
+        return (LRESULT)0;
     }
+    
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 LRESULT Window::HandleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    CONST LRESULT result = uIManager.handleMessage(hWnd, uMsg, wParam, lParam);
-
-    if (result != (LRESULT)0) { return result; }
-
-    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    return uIManager.handleMessage(hWnd, uMsg, wParam, lParam);;
 }
 
 BOOL Window::RegisterWindowClass() // РЕГИСТРАЦИЯ КЛАССА
@@ -39,13 +47,13 @@ BOOL Window::RegisterWindowClass() // РЕГИСТРАЦИЯ КЛАССА
         return FALSE;
     }
 
-    WNDCLASSA wc = {};
+    WNDCLASSW wc = {};
 
     wc.lpfnWndProc = WinProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = className;
 
-    if (RegisterClassA(&wc) == 0)
+    if (RegisterClassW(&wc) == 0)
     {
         std::cerr << "Ошибка регистрации класса окна. Код ошибки: " << GetLastError() << std::endl;
 
@@ -57,7 +65,7 @@ BOOL Window::RegisterWindowClass() // РЕГИСТРАЦИЯ КЛАССА
 
 BOOL Window::CreateWindowInstance() // СОЗДАНИЕ ОКНА
 {
-    hWnd = CreateWindowA(
+    hWnd = CreateWindowW(
         className,
         windowName,
         WS_OVERLAPPEDWINDOW, // СТИЛЬ
@@ -91,7 +99,7 @@ Window* Window::pThis = nullptr;
 
 //
 
-Window::Window(const char* className, const char* windowName)
+Window::Window(const wchar_t* className, const wchar_t* windowName)
     :   hInstance(NULL),
         hWnd(NULL),
         className(className),
@@ -114,9 +122,11 @@ Window::Window(const char* className, const char* windowName)
 
 Window::~Window()
 {
+    startUpFlag = FALSE;
+
     if (hWnd != NULL) { DestroyWindow(hWnd); }
 
-    if (hInstance != NULL) { UnregisterClassA(className, hInstance); }
+    if (hInstance != NULL) { UnregisterClassW(className, hInstance); }
 }
 
 void Window::loop() // ОСНОВНОЙ ЦИКЛ
@@ -133,15 +143,15 @@ void Window::loop() // ОСНОВНОЙ ЦИКЛ
         return;
     }
 
-    assert(ND3D::d3DData.pD3DDevice != nullptr);
-    assert(ND3D::d3DData.pD3DDeviceContext != nullptr);
-
-    if (ND3D::d3DData.pD3DDevice == nullptr || ND3D::d3DData.pD3DDeviceContext == nullptr)
+    if (d3DData.pD3DDevice == nullptr || d3DData.pD3DDeviceContext == nullptr)
     {
         return;
     }
 
-    if (uIManager.init(hWnd, ND3D::d3DData.pD3DDevice, ND3D::d3DData.pD3DDeviceContext) != TRUE)
+    ShowWindow(hWnd, SW_SHOWNORMAL);
+    UpdateWindow(hWnd); // ПЕРЕРИСОВКА ОКНА
+
+    if (uIManager.init(hWnd, d3DData.pD3DDevice, d3DData.pD3DDeviceContext) != TRUE)
     {
         uIManager.shutDown();
 
@@ -152,9 +162,9 @@ void Window::loop() // ОСНОВНОЙ ЦИКЛ
 
     BOOL state = FALSE;
 
-    while (TRUE)
+    while (!state)
     {
-        if (PeekMessageA(&msg, hWnd, 0U, 0U, PM_REMOVE) == TRUE)
+        if (PeekMessageW(&msg, NULL, 0U, 0U, PM_REMOVE) == TRUE)
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
@@ -174,4 +184,6 @@ void Window::loop() // ОСНОВНОЙ ЦИКЛ
     }
 
     uIManager.shutDown();
+
+    d3D.CleanupDeviceD3D();
 }

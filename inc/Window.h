@@ -1,6 +1,6 @@
 #pragma once
 
-#include "D3D.h" 
+#include "D3D.h"
 #include "UIManager.h"
 
 #include <Windows.h>
@@ -25,8 +25,8 @@ private:
     HINSTANCE hInstance; // HANDLE ЭКЗЕМПЛЯРА ПРИЛОЖЕНИЯ
     HWND hWnd; // HANDLE ОКНА
 
-    const char* className = nullptr; // ИМЯ КЛАССА ОКНА
-    const char* windowName = nullptr; // ИМЯ ОКНА
+    const wchar_t* className = nullptr; // ИМЯ КЛАССА ОКНА
+    const wchar_t* windowName = nullptr; // ИМЯ ОКНА
 
     static Window* pThis;
 
@@ -35,7 +35,7 @@ private:
     ND3D::D3D d3D;
     UIManager uIManager;
 public:
-    Window(const char* className, const char* windowName);
+    Window(const wchar_t* className, const wchar_t* windowName);
     ~Window();
 
     void loop(); // ОСНОВНОЙ ЦИКЛ

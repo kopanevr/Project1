@@ -5,6 +5,79 @@
 
 using namespace ND3D;
 
+D3DData d3DData = {};
+
+BOOL D3D::CreateRenderTargetView() // СОЗДАНИЕ RENDER TARGET VIEW
+{
+    ID3D11Texture2D* pBackBuffer = nullptr;
+
+    HRESULT hr = d3DData.pIDXGISwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (PVOID*)&pBackBuffer);
+
+    assert(SUCCEEDED(hr) == true);
+
+    if (FAILED(hr) == true)
+    {
+        std::cerr << "Ошибка получения доступа к буферу." << std::endl;
+
+        return FALSE;
+    }
+
+    d3DData.pD3DDevice->CreateRenderTargetView(pBackBuffer, NULL, &d3DData.pIDXGIRenderTargetView);
+
+    pBackBuffer->Release(); // УМЕНЬШИТЬ СЧЕТЧИК ССЫЛОК
+
+    return TRUE;
+}
+
+void D3D::CleanupRenderTargetView()
+{
+    if (d3DData.pIDXGIRenderTargetView != nullptr) { d3DData.pIDXGIRenderTargetView->Release(); d3DData.pIDXGIRenderTargetView = nullptr; }
+}
+
+IDXGIAdapter* D3D::GetAdapter(const UINT index) const // ПОЛУЧЕНИЕ АДАПТЕРА
+{
+    IDXGIFactory* pFactory = nullptr;
+
+    HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (PVOID*)&pFactory); // СОЗДАНИЕ ФАБРИКИ DXGI
+
+    assert(SUCCEEDED(hr) == true);
+
+    if (FAILED(hr) == true)
+    {
+        std::cerr << "Ошибка создания фабрики DXGI." << std::endl;
+
+        return nullptr;
+    }
+
+    IDXGIAdapter* pAdapter = nullptr;
+
+    hr = pFactory->EnumAdapters(index, &pAdapter);
+
+    pFactory->Release();
+
+    assert(SUCCEEDED(hr) == true);
+
+    if (FAILED(hr) == true)
+    {
+        return nullptr;
+    }
+
+    DXGI_ADAPTER_DESC dsc = {0};
+
+    hr = pAdapter->GetDesc(&dsc); // ПОЛУЧЕНИЕ ОПИСАНИЯ АДАПТЕРА
+
+    assert(SUCCEEDED(hr) == true);
+
+    if (FAILED(hr) == true)
+    {
+        return nullptr;
+    }
+
+    std::cout << "Адаптер " << index << ":" << std::endl;
+
+    return pAdapter;
+}
+
 BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И ЦЕПОЧКИ БУФЕРОВ
 {
     DXGI_SWAP_CHAIN_DESC dsc = {0};
@@ -44,9 +117,11 @@ BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И
     createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
+    IDXGIAdapter* pAdapter = D3D::GetAdapter(1U);
+
     HRESULT hr = D3D11CreateDeviceAndSwapChain(
-        NULL, // АДАПТЕР
-        D3D_DRIVER_TYPE_HARDWARE, // ТИП ДРАЙВЕРА
+        pAdapter, // АДАПТЕР
+        D3D_DRIVER_TYPE_UNKNOWN, // ТИП ДРАЙВЕРА
         NULL,
         createDeviceFlags, // ФЛАГИ
         featureLevel,
@@ -58,6 +133,9 @@ BOOL D3D::CreateDeviceD3D(HWND hWnd) // СОЗДАНИЕ УСТРОЙСТВА И
         &d3DData.featureLevel,
         &d3DData.pD3DDeviceContext
     );
+
+    assert(d3DData.pD3DDevice != nullptr);
+    assert(d3DData.pD3DDeviceContext != nullptr);
 
     assert(SUCCEEDED(hr) == true);
 
@@ -83,31 +161,4 @@ void D3D::CleanupDeviceD3D()
     if (d3DData.pIDXGISwapChain != nullptr) { d3DData.pIDXGISwapChain->Release(); d3DData.pIDXGISwapChain = nullptr; }
     if (d3DData.pD3DDeviceContext != nullptr) { d3DData.pD3DDeviceContext->Release(); d3DData.pD3DDeviceContext = nullptr; }
     if (d3DData.pD3DDevice != nullptr) { d3DData.pD3DDevice->Release(); d3DData.pD3DDevice = nullptr; }
-}
-
-BOOL D3D::CreateRenderTargetView() // СОЗДАНИЕ RENDER TARGET VIEW
-{
-    ID3D11Texture2D* pBackBuffer = nullptr;
-
-    HRESULT hr = d3DData.pIDXGISwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBuffer);
-
-    assert(FAILED(hr) != true);
-
-    if (FAILED(hr) == true)
-    {
-        std::cerr << "Ошибка получения доступа к буферу." << std::endl;
-
-        return FALSE;
-    }
-
-    d3DData.pD3DDevice->CreateRenderTargetView(pBackBuffer, NULL, &d3DData.pIDXGIRenderTargetView);
-
-    pBackBuffer->Release(); // УМЕНЬШИТЬ СЧЕТЧИК ССЫЛОК
-
-    return TRUE;
-}
-
-void D3D::CleanupRenderTargetView()
-{
-    if (d3DData.pIDXGIRenderTargetView != nullptr) { d3DData.pIDXGIRenderTargetView->Release(); d3DData.pIDXGIRenderTargetView = nullptr; }
 }

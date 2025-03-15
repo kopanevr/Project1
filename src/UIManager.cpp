@@ -1,19 +1,36 @@
 ﻿#include "UIManager.h"
 
+#include "D3D.h"
+
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
 
+using namespace ND3D;
+
+extern D3DData d3DData;
+
 void UIManager::body() const
 {
-    ImGui::Begin("_", nullptr, ImGuiWindowFlags_NoTitleBar); // НАЧАЛО ОКНА
+    ImGui::SetNextWindowPos(ImVec2(600.0f, 50.0f));
 
-    ImGui::Begin("General"); // НАЧАЛО ОКНА
+    ImGui::Begin("_", nullptr,
+        //
+
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_AlwaysAutoResize
+    ); // НАЧАЛО ОКНА
 
     //
 
-    ImGui::End(); // КОНЕЦ ОКНА
+    if (ImGui::CollapsingHeader("General") == true)
+    {
+        //
+    }
+
     ImGui::Text("Select a vehicle to display"); // ТЕКСТ
+
+    //
 
     ImGui::End(); // КОНЕЦ ОКНА
 }
@@ -33,12 +50,12 @@ BOOL UIManager::init(HWND hWnd, ID3D11Device* pD3DDevice, ID3D11DeviceContext* p
 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-    if (ImGui_ImplWin32_Init(hWnd) != true) // ИНИЦИАЛИЗАЦИЯ БЭКЕНДА IMGUI ДЛЯ WINDOWS API
+    if (ImGui_ImplDX11_Init(pD3DDevice, pID3D11DeviceContext) != true) // ИНИЦИАЛИЗАЦИЯ БЭКЕНДА IMGUI ДЛЯ DIRECTX 11
     {
         return FALSE;
     }
 
-    if (ImGui_ImplDX11_Init(pD3DDevice, pID3D11DeviceContext) != true) // ИНИЦИАЛИЗАЦИЯ БЭКЕНДА IMGUI ДЛЯ DIRECTX 11
+    if (ImGui_ImplWin32_Init(hWnd) != true) // ИНИЦИАЛИЗАЦИЯ БЭКЕНДА IMGUI ДЛЯ WINDOWS API
     {
         return FALSE;
     }
@@ -76,7 +93,16 @@ void UIManager::run() const
 
     ImGui::Render(); // СОЗДАНИЕ СПИСКА КОМАНД РЕНДЕРИНГА НОВОГО КАДРА
     
+    constexpr ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    CONST FLOAT clearColorWithAlpha[4] = {clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w};
+
+    d3DData.pD3DDeviceContext->OMSetRenderTargets(1U, &d3DData.pIDXGIRenderTargetView, nullptr); // УСТАНОВКА RENDER TARGET VIEW
+    d3DData.pD3DDeviceContext->ClearRenderTargetView(d3DData.pIDXGIRenderTargetView, clearColorWithAlpha); // ОЧИСТКА RENDER TARGET VIEW
+
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData()); // РЕНДЕРИНГ НОВОГО КАДРА IMGUI С ПОМОЩЬЮ DIRECTX 11
+
+    d3DData.pIDXGISwapChain->Present(1U, 0U); // ОТОБРАЖЕНИЕ БУФЕРА НА ЭКРАНЕ
 }
 
 LRESULT UIManager::handleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
