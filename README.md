@@ -1,5 +1,7 @@
 # **PROJECT 1**
 
+![DirectX Version](https://img.shields.io/badge/DirectX-11-blue)
+
 ## ПРЕДИСЛОВИЕ
 
 Проект разработан в рамках учебного процесса и служит для изучения Windows API. Он предоставляет практический опыт работы с [Windows API](https://learn.microsoft.com/en-us/windows/win32/api), а также демонстрирует интеграцию с библиотекой Dear [Dear ImGui](https://github.com/ocornut/imgui) для создания графического интерфейса.
