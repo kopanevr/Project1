@@ -74,6 +74,7 @@ IDXGIAdapter* D3D::GetAdapter(const UINT index) const // ПОЛУЧЕНИЕ АД
     }
 
     std::cout << "Адаптер " << index << ":" << std::endl;
+    std::cout << "Идентификатор устройства: 0x" << reinterpret_cast<PVOID>(dsc.DeviceId) << std::endl;
 
     return pAdapter;
 }
