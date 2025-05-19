@@ -13,7 +13,7 @@ public:
     UIManager() = default;
     ~UIManager() = default;
 
-#if __cppcpp > 201703L
+#if __cplusplus > 201703L
     [[nodiscard]]
 #endif
     BOOL init(HWND hWnd, ID3D11Device* pD3DDevice, ID3D11DeviceContext* pID3D11DeviceContext);
